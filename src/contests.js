@@ -3,133 +3,145 @@ import React from 'react';
 import Card from '../src/Components/Card/card';
 import Header from '../src/Components/Header/Header'; // Assuming you already have a Header component
 import Footer from '../src/Components/Footer/Footer'; // Assuming you already have a Footer component
-import 'bootstrap/dist/css/bootstrap.min.css';
+import OpinionsIcon from '../src/icons/opinions-icon.svg';
+import TechAndGadgetsIcon from '../src/icons/TechAndGadgetsIcon.svg';
+import HomeAndKitchenIcon from '../src/icons/HomeAndKitchenIcon.svg';
+import BeautyAndHealthIcon from '../src/icons/BeautyAndHealthIcon.svg';
+import AutoAndTravelIcon from '../src/icons/AutoIcon.svg';
+import BooksAndMediaIcon from '../src/icons/BooksAndMediaIcon.svg';
+import FashionIcon from '../src/icons/FashionIcon.svg';
+import SportsAndOutdoorsIcon from '../src/icons/SportsAndOutdoorsIcon.svg';
+import ToysAndGamesIcon from '../src/icons/ToysAndGamesIcon.svg';
+import LuxuryItemsIcon from '../src/icons/luxuryItemsIcon.svg';
+import HighEndTechIcon from '../src/icons/HighEndTechIcon.svg';
+import FineArtIcon from '../src/icons/FineArtIcon.svg';
+import '../src/contestpage.css'
 
-  const contestCategories = [
-    {
-      level: 'Bronze',
-      points: '100pts',
-      contests: [
-        {
-          title: 'Opinions',
-          content: 'Join the Conversation.',
-          icon: 'src/icons/opinions-icon.svg',
-          link: 'contest-page.html?contest=opinions'
-        },
-        {
-          title: 'Tech and Gadgets',
-          content: 'Explore the latest in technology and gadgets.',
-          icon: 'src/icons/tech-and-gadgets-icon.svg',
-          link: 'contest-page.html?contest=tech'
-        },
-        {
-          title: 'Cooking and Baking',
-          content: 'Show off your culinary skills.',
-          icon: 'src/icons/cooking-icon.svg',
-          link: 'contest-page.html?contest=cooking'
-        },
-      ]
-    },
-    {
-      level: 'Silver',
-      points: '200pts',
-      contests: [
-        {
-          title: 'DIY Projects',
-          content: 'Create and share your DIY projects.',
-          icon: 'src/icons/diy-icon.svg',
-          link: 'contest-page.html?contest=diy'
-        },
-        {
-          title: 'Fashion and Style',
-          content: 'Showcase your fashion sense and style.',
-          icon: 'src/icons/fashion-icon.svg',
-          link: 'contest-page.html?contest=fashion'
-        },
-        {
-          title: 'Music and Dance',
-          content: 'Perform and share your musical talents.',
-          icon: 'src/icons/music-icon.svg',
-          link: 'contest-page.html?contest=music'
-        },
-      ]
-    },
-    {
-      level: 'Gold',
-      points: '500pts',
-      contests: [
-        {
-          title: 'Art and Illustration',
-          content: 'Display your artistic skills and illustrations.',
-          icon: 'src/icons/art-icon.svg',
-          link: 'contest-page.html?contest=art'
-        },
-        {
-          title: 'Photography',
-          content: 'Capture and share stunning photographs.',
-          icon: 'src/icons/photography-icon.svg',
-          link: 'contest-page.html?contest=photography'
-        },
-        {
-          title: 'Books and Media',
-          content: 'Discuss and review your favorite books.',
-          icon: 'src/icons/books-and-media-icon.svg',
-          link: 'contest-page.html?contest=books'
-        },
-      ]
-    },
-    {
-      level: 'Platinum',
-      points: '1000pts',
-      contests: [
-        {
-          title: 'Science and Innovation',
-          content: 'Explore scientific discoveries and innovations.',
-          icon: 'src/icons/science-icon.svg',
-          link: 'contest-page.html?contest=science'
-        },
-        {
-          title: 'Travel',
-          content: 'Share your travel stories and tips.',
-          icon: 'src/icons/travel-icon.svg',
-          link: 'contest-page.html?contest=travel'
-        },
-      ]
-    },
-    // Add more categories if needed
-  ];
-  
+
+const contestsData = [
+  {
+    id: 'bronze-category-contests',
+    label: 'Bronze (50-100pts)',
+    contests: [
+      {
+        id: 'opinions',
+        label: 'Opinions',
+        icon: OpinionsIcon,
+        description: 'Broadcast your thoughts, engage in debate.'
+      },
+      {
+        id: 'tech-and-gadgets',
+        label: 'Tech & Gadgets',
+        icon: TechAndGadgetsIcon,
+        description: 'Explore, review, discuss latest technology.'
+      },
+      {
+        id: 'home-and-kitchen',
+        label: 'Home & Kitchen',
+        icon: HomeAndKitchenIcon,
+        description: 'Share insights on domestic essentials.'
+      }
+    ]
+  },
+  {
+    id: 'silver-category-contests',
+    label: 'Silver (100-200pts)',
+    contests: [
+      {
+        id: 'beauty-and-health',
+        label: 'Beauty & Health',
+        icon: BeautyAndHealthIcon,
+        description: 'Experience wellness with superior products.'
+      },
+      {
+        id: 'auto-and-travel',
+        label: 'Auto & Travel',
+        icon: AutoAndTravelIcon,
+        description: 'Navigate the world, one review at a time.'
+      },
+      {
+        id: 'books-and-media',
+        label: 'Books & Media',
+        icon: BooksAndMediaIcon,
+        description: 'Unveil literary gems and entertainment.'
+      }
+    ]
+  },
+  {
+    id: 'gold-category-contests',
+    label: 'Gold (200-500pts)',
+    contests: [
+      {
+        id: 'fashion',
+        label: 'Fashion',
+        icon: FashionIcon,
+        description: 'Stay trendy with stylish updates.'
+      },
+      {
+        id: 'sports-and-outdoors',
+        label: 'Sports & Outdoors',
+        icon: SportsAndOutdoorsIcon,
+        description: 'Join in athletic gear showdowns.'
+      },
+      {
+        id: 'toys-and-games',
+        label: 'Toys & Games',
+        icon: ToysAndGamesIcon,
+        description: 'Share the fun with toy and game showdowns.'
+      }
+    ]
+  },
+  {
+    id: 'platinum-category-contests',
+    label: 'Platinum (500-1000pts)',
+    contests: [
+      {
+        id: 'luxury-items',
+        label: 'Luxury Items',
+        icon: LuxuryItemsIcon,
+        description: 'Review and rate the finest luxuries.'
+      },
+      {
+        id: 'high-end-tech',
+        label: 'High-End Tech',
+        icon: HighEndTechIcon,
+        description: 'Experience technological innovation.'
+      },
+      {
+        id: 'fine-art',
+        label: 'Fine Art',
+        icon: FineArtIcon,
+        description: 'Appraise and discuss exquisite art pieces.'
+      }
+    ]
+  },
+  // Add more categories if needed
+];
 
 const ContestsPage = () => {
   return (
-    <>
+    <div>
       <Header />
-      <div className="wrapper">
-        <div className="main-container">
-          <section className="top-options">
-            {/* Top Options Content */}
-          </section>
-          <div className="main-content">
-            <h2 className="page-title">Contests</h2>
-            <div className="contests-content">
-              {contestCategories.map(category => (
-                <section className={`${category.level.toLowerCase()}-content contest-content`} key={category.level}>
-                  <h3 className="section-title">{category.level} ({category.points})</h3>
-                  <div className="card-row">
-                    {category.contests.map(contest => (
-                      <Card key={contest.title} {...contest} />
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
+      {contestsData.map((category) => (
+        <section key={category.id} className="my-5">
+          <h2 className="text-center my-3">{category.label}</h2>
+          <div className="d-flex flex-wrap justify-content-center">
+            {category.contests.map((contest) => (
+              <Card
+                key={contest.id}
+                title={contest.label}
+                content={contest.description}
+                icon={contest.icon}
+                link={`contest-page.html?contest=${contest.id}`}
+              />
+            ))}
           </div>
-          <Footer />
-        </div>
-      </div>
-    </>
+        </section>
+      ))}
+      <Footer />
+    </div>
   );
 };
 
-export default Contests;
 
+export default ContestsPage;

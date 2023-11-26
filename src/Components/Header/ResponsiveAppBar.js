@@ -11,11 +11,11 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from './Adb.svg'
+import AdbIcon from './adb.svg/
 const pages = ['Contests', 'Rewards', 'Contact'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function Header() {
+function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -160,4 +160,4 @@ function Header() {
     </AppBar>
   );
 }
-export default Header;
+export default ResponsiveAppBar;
