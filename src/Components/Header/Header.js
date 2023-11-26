@@ -1,5 +1,5 @@
-// Header.js
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,7 +12,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb'; // Make sure the path is correct
+import AdbIcon from '@mui/icons-material/Adb'; // Make sure the path to your icon component is correct
 
 const pages = ['Contests', 'Rewards', 'Contact'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -45,8 +45,8 @@ const Header = () => {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            component={RouterLink}
+            to="/" // Home route
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -91,7 +91,9 @@ const Header = () => {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center" component={RouterLink} to={`./src/${page.toLowerCase()}`}>
+                    {page}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -101,8 +103,8 @@ const Header = () => {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="/"
+            component={RouterLink}
+            to="/" // Home route
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -122,7 +124,8 @@ const Header = () => {
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                href={`/${page.toLowerCase()}`} // Assuming you have routing setup
+                component={RouterLink}
+                to={`/${page.toLowerCase()}`} // This is the URL path
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
@@ -137,7 +140,6 @@ const Header = () => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -154,7 +156,9 @@ const Header = () => {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Typography textAlign="center" component={RouterLink} to={`/src/${setting.toLowerCase()}`}>
+                    {setting}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>

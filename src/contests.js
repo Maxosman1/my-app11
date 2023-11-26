@@ -1,8 +1,6 @@
 // ContestsPage.js
 import React from 'react';
 import Card from '../src/Components/Card/card';
-import Header from '../src/Components/Header/Header'; // Assuming you already have a Header component
-import Footer from '../src/Components/Footer/Footer'; // Assuming you already have a Footer component
 import OpinionsIcon from '../src/icons/opinions-icon.svg';
 import TechAndGadgetsIcon from '../src/icons/TechAndGadgetsIcon.svg';
 import HomeAndKitchenIcon from '../src/icons/HomeAndKitchenIcon.svg';
@@ -21,7 +19,7 @@ import '../src/contestpage.css'
 const contestsData = [
   {
     id: 'bronze-category-contests',
-    label: 'Bronze (50-100pts)',
+    label: 'Bronze (100pts)',
     contests: [
       {
         id: 'opinions',
@@ -45,7 +43,7 @@ const contestsData = [
   },
   {
     id: 'silver-category-contests',
-    label: 'Silver (100-200pts)',
+    label: 'Silver (200pts)',
     contests: [
       {
         id: 'beauty-and-health',
@@ -69,7 +67,7 @@ const contestsData = [
   },
   {
     id: 'gold-category-contests',
-    label: 'Gold (200-500pts)',
+    label: 'Gold (500pts)',
     contests: [
       {
         id: 'fashion',
@@ -93,7 +91,7 @@ const contestsData = [
   },
   {
     id: 'platinum-category-contests',
-    label: 'Platinum (500-1000pts)',
+    label: 'Platinum (1000pts)',
     contests: [
       {
         id: 'luxury-items',
@@ -118,30 +116,29 @@ const contestsData = [
   // Add more categories if needed
 ];
 
-const ContestsPage = () => {
+const Contests = () => {
   return (
     <div>
-      <Header />
       {contestsData.map((category) => (
         <section key={category.id} className="my-5">
           <h2 className="text-center my-3">{category.label}</h2>
           <div className="d-flex flex-wrap justify-content-center">
             {category.contests.map((contest) => (
-              <Card
-                key={contest.id}
-                title={contest.label}
-                content={contest.description}
-                icon={contest.icon}
-                link={`contest-page.html?contest=${contest.id}`}
-              />
+              <Link to={`/contest/${contest.id}`} key={contest.id} style={{ textDecoration: 'none' }}>
+                <Card
+                  title={contest.label}
+                  content={contest.description}
+                  icon={contest.icon}
+                />
+              </Link>
             ))}
           </div>
         </section>
       ))}
-      <Footer />
     </div>
   );
 };
 
 
-export default ContestsPage;
+
+export default Contests;
