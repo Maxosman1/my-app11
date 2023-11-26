@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from '../src/Components/Header/Header';
+import ContestsPage from '../src/contests'; // Adjust the path as needed
 
-function App() {
-  return (
+import MainContent from '../src/Pages/Homepage/MainContent';
+import Footer from '../src/Components/Footer/Footer';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const App = () => (
+  <Router>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <Routes>
+        <Route path="/" element={<MainContent />} />
+        <Route path="/contests" element={<ContestsPage />} />
+        {/* Add other routes here */}
+      </Routes>
+      <Footer />
     </div>
-  );
-}
+  </Router>
+);
 
-export default App;
+export default App;;
