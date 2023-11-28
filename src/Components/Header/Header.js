@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,14 +12,14 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb'; // Make sure the path to your icon component is correct
+import AdbIcon from '@mui/icons-material/Adb'; // Replace with your logo/icon
 
 const pages = ['Contests', 'Rewards', 'Contact'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const Header = () => {
-  const [anchorElNav, setAnchorElNav] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -37,6 +37,16 @@ const Header = () => {
     setAnchorElUser(null);
   };
 
+  const handlePageClick = (page) => {
+    navigate(`/${page.toLowerCase()}`);
+    handleCloseNavMenu();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/login');
+    handleCloseUserMenu();
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -45,8 +55,8 @@ const Header = () => {
           <Typography
             variant="h6"
             noWrap
-            component={RouterLink}
-            to="/" // Home route
+            component="a"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -55,20 +65,18 @@ const Header = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-            }}
-          >
-            STYRATE
+            }}>
+            LOGO
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="navigation menu"
+              aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
-            >
+              color="inherit">
               <MenuIcon />
             </IconButton>
             <Menu
@@ -84,16 +92,10 @@ const Header = () => {
                 horizontal: 'left',
               }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
+              onClose={handleCloseNavMenu}>
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" component={RouterLink} to={`./src/${page.toLowerCase()}`}>
-                    {page}
-                  </Typography>
+                <MenuItem key={page} onClick={() => handlePageClick(page)}>
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -103,8 +105,8 @@ const Header = () => {
           <Typography
             variant="h5"
             noWrap
-            component={RouterLink}
-            to="/" // Home route
+            component="a"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -114,20 +116,16 @@ const Header = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-            }}
-          >
-            STYRATE
+            }}>
+            LOGO
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
-                component={RouterLink}
-                to={`/${page.toLowerCase()}`} // This is the URL path
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
+                onClick={() => handlePageClick(page)}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
                 {page}
               </Button>
             ))}
@@ -136,10 +134,11 @@ const Header = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                <Avatar src='/static/images/avatar/default.jpg' />
               </IconButton>
             </Tooltip>
             <Menu
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -152,21 +151,16 @@ const Header = () => {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center" component={RouterLink} to={`/src/${setting.toLowerCase()}`}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
+              onClose={handleCloseUserMenu}>
+              <MenuItem onClick={handleProfileClick}>
+                <Typography textAlign="center">Login/Signup</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-};
+}
 
 export default Header;

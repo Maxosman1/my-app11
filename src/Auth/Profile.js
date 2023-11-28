@@ -1,137 +1,91 @@
-// Profile.js
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { Button, TextField, Container, Typography, Avatar } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, CircularProgress } from '@mui/material';
+import { useSupabaseAuth } from '@supabase/auth-helpers-react';
+import useUpdateProfile from './useUpdateProfile';
+import useFetchPoints from './useFetchPoints';
+import supabase from '../supabaseClient'; // Adjust the path as necessary
 
 const Profile = () => {
-  const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState('');
-  const [website, setWebsite] = useState('');
-  const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [points, setPoints] = useState(0);
-  const [uploading, setUploading] = useState(false);
+  const { user } = useSupabaseAuth();
+  const { updateProfile, loading: updating, error: updateError } = useUpdateProfile();
+  const { fetchProfilePoints, loading: fetchingPoints, error: fetchPointsError } = useFetchPoints();
+  const [profile, setProfile] = useState({ username: '', avatar_url: '' });
+  const [points, setPoints] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [errorProfile, setErrorProfile] = useState(null);
 
   useEffect(() => {
-    getProfile();
-  }, []);
+    if (user) {
+      fetchProfileData(user.id);
+      fetchProfilePoints(user.id);
+    }
+  }, [user]);
 
-  const getProfile = async () => {
+  const fetchProfileData = async (userId) => {
+    setLoadingProfile(true);
     try {
-      setLoading(true);
-      const user = supabase.auth.user();
-      
-      let { data, error, status } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select(`username, website, bio, avatar_url, points`)
-        .eq('id', user.id)
+        .select('*')
+        .eq('user_id', userId)
         .single();
 
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setUsername(data.username);
-        setWebsite(data.website);
-        setBio(data.bio);
-        setAvatarUrl(data.avatar_url);
-        setPoints(data.points);
-      }
+      if (error) throw error;
+      setProfile({ username: data.username, avatar_url: data.avatar_url });
     } catch (error) {
-      alert(error.message);
+      setErrorProfile(error.message);
     } finally {
-      setLoading(false);
+      setLoadingProfile(false);
     }
   };
 
-  const handleAvatarUpload = async (event) => {
-    try {
-      setUploading(true);
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      let { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      onAvatarUpload(filePath);
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setUploading(false);
-    }
+  const handleChange = (e) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  const onAvatarUpload = async (filePath) => {
-    const { data, error: urlError } = await supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
 
-    if (urlError) {
-      throw urlError;
-    }
 
-    setAvatarUrl(data.publicURL);
-    updateProfile({ avatar_url: data.publicURL }); // Call update profile to save the new avatar URL
+  const handleUpdate = async () => {
+    await updateProfile(user.id, profile);
+    // Additional logic after update
   };
 
-  const updateProfile = async (updates) => {
-    try {
-      setLoading(true);
-      const user = supabase.auth.user();
-
-      const newUpdates = {
-        id: user.id,
-        username,
-        website,
-        bio,
-        ...updates,
-        updated_at: new Date(),
-      };
-
-      let { error } = await supabase.from('profiles').upsert(newUpdates, {
-        returning: 'minimal', // Don't return the value after inserting
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!user) return <Typography variant="h6">Please log in</Typography>;
 
   return (
     <Container component="main" maxWidth="xs">
-      <Typography component="h1" variant="h5">Profile</Typography>
-      <Avatar
-        src={avatarUrl}
-        sx={{ width: 56, height: 56, marginBottom: 2 }}
-      />
-      <Button
-        variant="contained"
-        component="label"
-        disabled={uploading}
-      >
-        Upload Avatar
-        <input
-          type="file"
-          hidden
-          onChange={handleAvatarUpload}
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography component="h1" variant="h5">Profile</Typography>
+        <TextField
+          margin="normal"
+          fullWidth
+          name="username"
+          label="Username"
+          type="text"
+          id="username"
+          value={profile.username}
+          onChange={handleChange}
         />
-      </Button>
-      <Typography variant="subtitle1">{`Points: ${points}`}</Typography>
-      {/* ... rest of the profile fields */}
-    </Container>
+        <TextField
+          margin="normal"
+          fullWidth
+          name="avatar_url"
+          label="Avatar URL"
+          type="text"
+          id="avatar_url"
+          value={profile.avatar_url}
+          onChange={handleChange}
+        />
+        {updating || fetchingPoints || loadingProfile ? <CircularProgress size={24} sx={{ mt: 2, mb: 1, alignSelf: 'center' }} /> : null}
+        <Button onClick={handleUpdate} variant="contained" sx={{ mt: 3, mb: 2 }}>
+          Update Profile
+        </Button>
+        {updateError && <Typography color="error">{updateError}</Typography>}
+        {errorProfile && <Typography color="error">{errorProfile}</Typography>}
+        {fetchPointsError && <Typography color="error">{fetchPointsError}</Typography>}
+        <Typography variant="body1">Points: {points}</Typography>
+      </Box>
+      </Container>
   );
 };
 
