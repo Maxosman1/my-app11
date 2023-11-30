@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { TextField, Button, Typography, Container, Checkbox, FormControlLabel } from '@mui/material';
-import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
+import { TikTokEmbed } from 'react-social-media-embed';
 
 const JoinContest = () => {
   const { contestId } = useParams();
   const [videoLink, setVideoLink] = useState('');
-  const [title, setTitle] = useState(''); // State for the video title
+  const [title, setTitle] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -17,7 +17,9 @@ const JoinContest = () => {
 
   const renderVideoEmbed = (url) => {
     if (isYouTubeLink(url)) {
-      return <YoutubeEmbed url={url} />;
+      const videoId = url.split('v=')[1].split('&')[0];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      return <iframe width="560" height="315" src={embedUrl} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
     } else if (isTikTokLink(url)) {
       return <TikTokEmbed url={url} />;
     }
@@ -42,10 +44,10 @@ const JoinContest = () => {
       .insert([
         { 
           contest_id: contestId,
-          user_id: supabase.auth.getUser()?.id, // Assuming user is logged in
+          user_id: supabase.auth.getUser()?.id,
           video_url: videoLink,
-          title: title, // Submit the title
-          // Other necessary fields...
+          title: title
+          // Additional fields can be added here
         }
       ]);
 

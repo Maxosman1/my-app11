@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Container, Grid, Card, CardContent, Button } from '@mui/material';
-import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
 import supabase from '../supabaseClient'; // Adjust the path as needed
+import { TikTokEmbed } from 'react-social-media-embed';
 
 const MainContent = () => {
   const [user, setUser] = useState(null);
@@ -52,10 +52,15 @@ const MainContent = () => {
     fetchVideos('created_at', setNewestVideos); // Fetch newest videos
   }, []);
 
+  const isYouTubeLink = (url) => /youtu(be.com|\.be)/.test(url);
+  const isTikTokLink = (url) => /tiktok\.com/.test(url);
+
   const renderVideoEmbed = (videoUrl) => {
-    if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-      return <YoutubeEmbed url={videoUrl} />;
-    } else if (videoUrl.includes("tiktok.com")) {
+    if (isYouTubeLink(videoUrl)) {
+      const videoId = videoUrl.split('v=')[1].split('&')[0];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      return <iframe width="560" height="315" src={embedUrl} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
+    } else if (isTikTokLink(videoUrl)) {
       return <TikTokEmbed url={videoUrl} />;
     }
     return <Typography>Unsupported video platform</Typography>;
@@ -76,7 +81,7 @@ const MainContent = () => {
                   {video.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {video.title}
+                  {video.description}
                 </Typography>
                 {video.contests && (
                   <Typography variant="caption" display="block" gutterBottom>

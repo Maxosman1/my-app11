@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { Typography, Button, Container, Grid, Card, CardContent, Box } from '@mui/material';
 import Countdown from 'react-countdown';
-import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
+import { TikTokEmbed } from 'react-social-media-embed';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const ContestPage = () => {
@@ -49,7 +49,7 @@ const ContestPage = () => {
 
   const renderVideoEmbed = (videoUrl) => {
     if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-      return <YoutubeEmbed url={videoUrl} />;
+      return <iframe src={`https://www.youtube.com/embed/${videoUrl.split('v=')[1].split('&')[0]}`} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
     } else if (videoUrl.includes('tiktok.com')) {
       return <TikTokEmbed url={videoUrl} />;
     }
@@ -67,6 +67,15 @@ const ContestPage = () => {
     );
   };
 
+  const getBorderColor = (index) => {
+    switch (index) {
+      case 0: return 'gold';
+      case 1: return 'silver';
+      case 2: return 'bronze';
+      default: return 'grey';
+    }
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom component="div">
@@ -78,7 +87,7 @@ const ContestPage = () => {
       {contest?.start_time && (
         <Box my={2} sx={{ backgroundColor: '#008000', p: 2, borderRadius: 2 }}>
           <Countdown
-            date={new Date(new Date(contest.start_time).getTime() + 12 * 24 * 60 * 60 * 1000)}
+            date={new Date(contest.start_time).getTime() + 12 * 24 * 60 * 60 * 1000}
             renderer={countdownRenderer}
           />
         </Box>
@@ -101,7 +110,7 @@ const ContestPage = () => {
       <Grid container spacing={2}>
         {topVideos.map((video, index) => (
           <Grid item key={video.id} xs={12} sm={6} md={4}>
-            <Card>
+            <Card sx={{ border: 3, borderColor: getBorderColor(index), position: 'relative' }}>
               {renderVideoEmbed(video.video_url)}
               <CardContent>
                 <Typography variant="h6" component="div">
@@ -111,6 +120,9 @@ const ContestPage = () => {
                   {video.description}
                 </Typography>
               </CardContent>
+              <Box position="absolute" top={16} right={16} bgcolor="background.paper" p={0.5} borderRadius={2}>
+                <Typography variant="subtitle1">{index + 1}</Typography>
+              </Box>
             </Card>
           </Grid>
         ))}

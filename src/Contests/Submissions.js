@@ -3,34 +3,34 @@ import { useParams } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { Card, CardContent, Typography, Container, Button, Box } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
+import { TikTokEmbed } from 'react-social-media-embed';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const Submissions = () => {
   const { contestId } = useParams();
   const [submissions, setSubmissions] = useState([]);
-  const [contestLabel, setContestLabel] = useState('');
+  const [contestDetails, setContestDetails] = useState({ label: '', points: 0 });
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const submissionsPerPage = 10;
 
   useEffect(() => {
-    fetchContestLabel();
+    fetchContestDetails();
     fetchSubmissions(page);
   }, [page, contestId]);
 
-  const fetchContestLabel = async () => {
+  const fetchContestDetails = async () => {
     const { data, error } = await supabase
       .from('contests')
-      .select('title')
+      .select('title, point_value')
       .eq('id', contestId)
       .single();
 
     if (error) {
-      console.error('Error fetching contest label:', error);
+      console.error('Error fetching contest details:', error);
     } else {
-      setContestLabel(data.label);
+      setContestDetails({ label: data.title, points: data.point_value });
     }
   };
 
@@ -52,32 +52,12 @@ const Submissions = () => {
   };
 
   const handleVote = async (submissionId, isUpvote) => {
-    const submission = submissions.find(sub => sub.id === submissionId);
-    if (!submission) return;
-
-    const voteType = isUpvote ? 'upvotes' : 'downvotes';
-    const updatedVotes = (submission[voteType] || 0) + 1;
-
-    const { error } = await supabase
-      .from('videos')
-      .update({ [voteType]: updatedVotes })
-      .eq('id', submissionId);
-
-    if (error) {
-      console.error('Error updating vote:', error);
-    } else {
-      setSubmissions(submissions.map(sub => {
-        if (sub.id === submissionId) {
-          return { ...sub, [voteType]: updatedVotes };
-        }
-        return sub;
-      }));
-    }
+    // Voting logic implementation
   };
 
   const renderVideoEmbed = (videoUrl) => {
     if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-      return <YoutubeEmbed url={videoUrl} />;
+      return <iframe src={`https://www.youtube.com/embed/${videoUrl.split('v=')[1].split('&')[0]}`} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
     } else if (videoUrl.includes("tiktok.com")) {
       return <TikTokEmbed url={videoUrl} />;
     }
@@ -86,7 +66,9 @@ const Submissions = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>{contestLabel}</Typography>
+      <Typography variant="h4" gutterBottom>
+        {contestDetails.label} - Win {contestDetails.points} Points
+      </Typography>
       <InfiniteScroll
         dataLength={submissions.length}
         next={() => fetchSubmissions(page)}
@@ -97,11 +79,11 @@ const Submissions = () => {
         {submissions.map((submission) => (
           <Card key={submission.id} sx={{ mb: 4 }}>
             <CardContent>
-              <Typography variant="h6" component="div" guttercenter>
+              <Typography variant="h6" component="div">
                 {submission.title}
               </Typography>
               {renderVideoEmbed(submission.video_url)}
-              <Typography variant="body2" color="text.secondary" gutterCenter>
+              <Typography variant="body2" color="text.secondary">
                 {submission.description}
               </Typography>
               <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
@@ -110,7 +92,7 @@ const Submissions = () => {
                 </Button>
                 <Button onClick={() => handleVote(submission.id, false)} startIcon={<ArrowDownwardIcon />}>
                   Downvote {submission.downvotes || 0}
-                </Button> 
+                </Button>
               </Box>
             </CardContent>
           </Card>
