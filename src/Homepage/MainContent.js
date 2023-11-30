@@ -1,58 +1,120 @@
 import React, { useState, useEffect } from 'react';
-import ContestCard from './ContestCard';
-import RewardCard from './RewardCard';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
+import { Typography, Container, Grid, Card, CardContent, Button } from '@mui/material';
+import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
 import supabase from '../supabaseClient'; // Adjust the path as needed
 
 const MainContent = () => {
+  const [user, setUser] = useState(null);
   const [points, setPoints] = useState(0);
+  const [topVideos, setTopVideos] = useState([]);
+  const [newestVideos, setNewestVideos] = useState([]);
 
   useEffect(() => {
-    const fetchPoints = async () => {
-      const user = supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('points')
-          .eq('id', user.id)
-          .single();
-
-        if (data) {
-          setPoints(data.points);
-        }
+    const checkUser = async () => {
+      const currentUser = await supabase.auth.getUser();
+      setUser(currentUser);
+      if (currentUser) {
+        fetchPoints(currentUser);
       }
     };
 
-    fetchPoints();
+    const fetchPoints = async (currentUser) => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('points')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (data) {
+        setPoints(data.points);
+      }
+    };
+
+    const fetchVideos = async (orderColumn, setFunction) => {
+      const { data } = await supabase
+        .from('videos')
+        .select(`
+          id,
+          title,
+          video_url,
+          contests (title)
+        `)
+        .order(orderColumn, { ascending: false })
+        .limit(3);
+
+      if (data) {
+        setFunction(data);
+      }
+    };
+
+    checkUser();
+    fetchVideos('votes', setTopVideos); // Fetch top videos
+    fetchVideos('created_at', setNewestVideos); // Fetch newest videos
   }, []);
+
+  const renderVideoEmbed = (videoUrl) => {
+    if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+      return <YoutubeEmbed url={videoUrl} />;
+    } else if (videoUrl.includes("tiktok.com")) {
+      return <TikTokEmbed url={videoUrl} />;
+    }
+    return <Typography>Unsupported video platform</Typography>;
+  };
+
+  const renderVideoGrid = (videos, title) => (
+    <>
+      <Typography variant="h5" gutterBottom component="div">
+        {title}
+      </Typography>
+      <Grid container spacing={2}>
+        {videos.map((video) => (
+          <Grid item key={video.id} xs={12} sm={6} md={4}>
+            <Card>
+              {renderVideoEmbed(video.video_url)}
+              <CardContent>
+                <Typography variant="h6" component="div">
+                  {video.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {video.title}
+                </Typography>
+                {video.contests && (
+                  <Typography variant="caption" display="block" gutterBottom>
+                    Category: {video.contests.title}
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </>
+  );
 
   return (
     <Container>
-      <Box sx={{ textAlign: 'center', padding: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Welcome to STYRATE
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          Join exciting video contests and earn rewards!
-        </Typography>
-        <Paper sx={{ margin: 'auto', padding: 2, maxWidth: 300, backgroundColor: '#ff416c', color: 'white', mt: 2 }}>
-          <Typography variant="body1">
+      <Typography variant="h4" gutterBottom component="div" sx={{ textAlign: 'center', mt: 4 }}>
+        Welcome to STYRATE
+      </Typography>
+      <Typography variant="subtitle1" gutterBottom component="div" sx={{ textAlign: 'center' }}>
+        Join exciting video contests and earn rewards!
+      </Typography>
+      <Card sx={{ mx: 'auto', mb: 3, p: 2, maxWidth: 300, backgroundColor: '#ff416c', color: 'white' }}>
+        {user ? (
+          <Typography variant="body1" component="div" sx={{ textAlign: 'center' }}>
             Your Points: {points}
           </Typography>
-        </Paper>
-        <Grid container spacing={2} sx={{ justifyContent: 'center', mt: 3 }}>
-          <Grid item>
-            <ContestCard />
-          </Grid>
-          <Grid item>
-            <RewardCard />
-          </Grid>
-        </Grid>
-      </Box>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <Typography variant="body1" component="div">
+              Please log in to see your points
+            </Typography>
+            <Button variant="contained" color="primary" onClick={() => {/* Add login logic here */}}>Log In</Button>
+          </div>
+        )}
+      </Card>
+      {renderVideoGrid(topVideos, "Top Videos")}
+      {renderVideoGrid(newestVideos, "Newest Videos")}
     </Container>
   );
 };

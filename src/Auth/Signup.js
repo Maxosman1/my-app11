@@ -1,18 +1,33 @@
 // Signup.js
 import React, { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, CircularProgress, Link } from '@mui/material';
-import useSignUp from './usesignup'; // Adjust the path according to your project structure
+import supabase from '../supabaseClient'; // Adjust the path as needed
+
+const signUp = async ({ email, password }) => {
+  const { user, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  if (error) throw new Error(error.message);
+  return user;
+};
+
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { signUp, loading, error } = useSignUp();
   const navigate = useNavigate();
+
+  const { mutate, isLoading, error } = useMutation({
+    mutationFn: signUp,
+    onSuccess: () => navigate('/login'),
+  });
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const user = await signUp(email, password);
-    if (user) navigate('/login');
+    mutate({ email, password });
   };
 
   return (
@@ -44,11 +59,11 @@ const Signup = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {loading && <CircularProgress size={24} sx={{ mt: 2, mb: 1, alignSelf: 'center' }} />}
+          {isLoading && <CircularProgress size={24} sx={{ mt: 2, mb: 1, alignSelf: 'center' }} />}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Sign Up
           </Button>
-          {error && <Typography color="error">{error}</Typography>}
+          {error && <Typography color="error">{error.message}</Typography>}
           <Link href="/login" variant="body2">
             {"Already have an account? Log in"}
           </Link>

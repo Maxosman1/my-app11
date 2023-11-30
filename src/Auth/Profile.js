@@ -1,91 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, CircularProgress } from '@mui/material';
-import { useSupabaseAuth } from '@supabase/auth-helpers-react';
-import useUpdateProfile from './useUpdateProfile';
-import useFetchPoints from './useFetchPoints';
-import supabase from '../supabaseClient'; // Adjust the path as necessary
+import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Avatar, Button, List, ListItem, ListItemText } from '@mui/material';
+import supabase from '../supabaseClient';
 
 const Profile = () => {
-  const { user } = useSupabaseAuth();
-  const { updateProfile, loading: updating, error: updateError } = useUpdateProfile();
-  const { fetchProfilePoints, loading: fetchingPoints, error: fetchPointsError } = useFetchPoints();
-  const [profile, setProfile] = useState({ username: '', avatar_url: '' });
-  const [points, setPoints] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(false);
-  const [errorProfile, setErrorProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState({ username: '', avatar_url: '', points: 0 });
+  const [userVideos, setUserVideos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      fetchProfileData(user.id);
-      fetchProfilePoints(user.id);
-    }
-  }, [user]);
+    const fetchProfileData = async () => {
+      const user = await supabase.auth.getUser();
+      if (!user.data) {
+        navigate('/auth');
+        return;
+      }
 
-  const fetchProfileData = async (userId) => {
-    setLoadingProfile(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
+      try {
+        const profileResponse = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.data.id)
+          .single();
+        
+        if (profileResponse.error) throw profileResponse.error;
+        setUserProfile(profileResponse.data);
 
-      if (error) throw error;
-      setProfile({ username: data.username, avatar_url: data.avatar_url });
-    } catch (error) {
-      setErrorProfile(error.message);
-    } finally {
-      setLoadingProfile(false);
-    }
+        const videosResponse = await supabase
+          .from('videos')
+          .select('*')
+          .eq('user_id', user.data.id);
+        
+        if (videosResponse.error) throw videosResponse.error;
+        setUserVideos(videosResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+      }
+    };
+
+    fetchProfileData();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
   };
 
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+  const handleEditProfile = () => {
+    navigate('/edit-profile');
   };
-
-
-
-  const handleUpdate = async () => {
-    await updateProfile(user.id, profile);
-    // Additional logic after update
-  };
-
-  if (!user) return <Typography variant="h6">Please log in</Typography>;
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">Profile</Typography>
-        <TextField
-          margin="normal"
-          fullWidth
-          name="username"
-          label="Username"
-          type="text"
-          id="username"
-          value={profile.username}
-          onChange={handleChange}
+    <Container component="main" maxWidth="md">
+      <Box display="flex" flexDirection="column" alignItems="center" my={4}>
+        <Avatar
+          src={userProfile.avatar_url || '/static/images/avatar/default.jpg'}
+          sx={{ width: 100, height: 100 }}
         />
-        <TextField
-          margin="normal"
-          fullWidth
-          name="avatar_url"
-          label="Avatar URL"
-          type="text"
-          id="avatar_url"
-          value={profile.avatar_url}
-          onChange={handleChange}
-        />
-        {updating || fetchingPoints || loadingProfile ? <CircularProgress size={24} sx={{ mt: 2, mb: 1, alignSelf: 'center' }} /> : null}
-        <Button onClick={handleUpdate} variant="contained" sx={{ mt: 3, mb: 2 }}>
-          Update Profile
+        <Typography variant="h5" mt={2}>{userProfile.username}</Typography>
+        <Typography variant="body1">Points: {userProfile.points}</Typography>
+        <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mt: 2 }}>
+          Logout
         </Button>
-        {updateError && <Typography color="error">{updateError}</Typography>}
-        {errorProfile && <Typography color="error">{errorProfile}</Typography>}
-        {fetchPointsError && <Typography color="error">{fetchPointsError}</Typography>}
-        <Typography variant="body1">Points: {points}</Typography>
+        <Button variant="contained" color="primary" onClick={handleEditProfile} sx={{ mt: 2 }}>
+          Edit Profile
+        </Button>
       </Box>
-      </Container>
+
+      <Typography variant="h6" mt={4}>Your Videos</Typography>
+      <List>
+        {userVideos.map(video => (
+          <ListItem key={video.id}>
+            <ListItemText 
+              primary={video.title} 
+              secondary={`Posted on: ${new Date(video.created_at).toLocaleDateString()}`} 
+            />
+          </ListItem>
+        ))}
+      </List>
+    </Container>
   );
 };
 

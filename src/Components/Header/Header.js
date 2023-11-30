@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../../supabaseClient'; // Adjust the path as needed
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,9 +18,22 @@ import AdbIcon from '@mui/icons-material/Adb'; // Replace with your logo/icon
 const pages = ['Contests', 'Rewards', 'Contact'];
 
 const Header = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentUser = supabase.auth.getUser();
+    setUser(currentUser);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe()    };
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -43,7 +57,11 @@ const Header = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/login');
+    if (user) {
+      navigate('/profile');
+    } else {
+      navigate('/auth');
+    }
     handleCloseUserMenu();
   };
 
@@ -134,7 +152,7 @@ const Header = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src='/static/images/avatar/default.jpg' />
+                <Avatar alt="Profile" src='/static/images/avatar/default.jpg' />
               </IconButton>
             </Tooltip>
             <Menu
@@ -153,7 +171,7 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}>
               <MenuItem onClick={handleProfileClick}>
-                <Typography textAlign="center">Login/Signup</Typography>
+                <Typography textAlign="center">{user ? 'Profile' : 'Login/Signup'}</Typography>
               </MenuItem>
             </Menu>
           </Box>

@@ -7,7 +7,7 @@ import { TikTokEmbed, YoutubeEmbed } from 'react-social-media-embed';
 const JoinContest = () => {
   const { contestId } = useParams();
   const [videoLink, setVideoLink] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(''); // State for the video title
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -30,23 +30,22 @@ const JoinContest = () => {
       alert('You must accept the terms and conditions.');
       return;
     }
-    if (!videoLink || !isYouTubeLink(videoLink) && !isTikTokLink(videoLink)) {
+    if (!videoLink || (!isYouTubeLink(videoLink) && !isTikTokLink(videoLink))) {
       alert('Please enter a valid YouTube or TikTok video URL.');
       return;
     }
 
     setSubmitting(true);
 
-    // Submission logic to Supabase
     const { error } = await supabase
-      .from('submissions')
+      .from('videos')
       .insert([
         { 
           contest_id: contestId,
-          user_id: supabase.auth.user().id, // Assumes user is logged in
+          user_id: supabase.auth.getUser()?.id, // Assuming user is logged in
           video_url: videoLink,
-          description: description,
-          // Initialize other necessary fields
+          title: title, // Submit the title
+          // Other necessary fields...
         }
       ]);
 
@@ -55,14 +54,14 @@ const JoinContest = () => {
     } else {
       alert('Your video has been submitted successfully!');
       setVideoLink('');
-      setDescription('');
+      setTitle('');
     }
 
     setSubmitting(false);
   };
 
   const handlePreview = () => {
-    if (!videoLink || !isYouTubeLink(videoLink) && !isTikTokLink(videoLink)) {
+    if (!videoLink || (!isYouTubeLink(videoLink) && !isTikTokLink(videoLink))) {
       alert('Please enter a valid YouTube or TikTok video URL.');
       return;
     }
@@ -81,9 +80,9 @@ const JoinContest = () => {
       />
       <TextField
         fullWidth
-        label="Enter video description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        label="Enter video title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
         margin="normal"
       />
       <FormControlLabel
@@ -106,7 +105,7 @@ const JoinContest = () => {
       {showPreview && (
         <div style={{ marginTop: '20px' }}>
           <Typography variant="h6">Preview Submission</Typography>
-          <Typography><b>Video Description:</b> {description}</Typography>
+          <Typography><b>Video title:</b> {title}</Typography>
           {renderVideoEmbed(videoLink)}
         </div>
       )}
