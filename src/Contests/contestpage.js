@@ -67,6 +67,15 @@ const ContestPage = () => {
     );
   };
 
+  const getBorderColor = (index) => {
+    switch (index) {
+      case 0: return 'gold';
+      case 1: return 'silver';
+      case 2: return 'bronze';
+      default: return 'grey';
+    }
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom component="div">
@@ -101,7 +110,7 @@ const ContestPage = () => {
       <Grid container spacing={2}>
         {topVideos.map((video, index) => (
           <Grid item key={video.id} xs={12} sm={6} md={4}>
-            <Card>
+            <Card sx={{ border: 3, borderColor: getBorderColor(index), position: 'relative' }}>
               {renderVideoEmbed(video.video_url)}
               <CardContent>
                 <Typography variant="h6" component="div">
@@ -111,6 +120,9 @@ const ContestPage = () => {
                   {video.description}
                 </Typography>
               </CardContent>
+              <Box position="absolute" top={16} right={16} bgcolor="background.paper" p={0.5} borderRadius={2}>
+                <Typography variant="subtitle1">{index + 1}</Typography>
+              </Box>
             </Card>
           </Grid>
         ))}
