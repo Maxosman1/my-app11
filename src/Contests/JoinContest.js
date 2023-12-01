@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { TextField, Button, Typography, Container, Checkbox, FormControlLabel } from '@mui/material';
@@ -11,18 +11,44 @@ const JoinContest = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [contestTopic, setContestTopic] = useState('');
 
-  const isYouTubeLink = (url) => /youtu(be.com|\.be)/.test(url);
+  useEffect(() => {
+    const fetchContestTopic = async () => {
+      const { data, error } = await supabase
+        .from('contest_topics')
+        .select('topic, description')
+        .eq('contest_id', contestId)
+        .single();
+
+      if (!error && data) {
+        setContestTopic(`${data.topic} - ${data.description}`);
+      }
+    };
+
+    fetchContestTopic();
+  }, [contestId]);
+
+  const isYouTubeLink = (url) => /youtu(be.com|\.be|be.com\/shorts)/.test(url);
   const isTikTokLink = (url) => /tiktok\.com/.test(url);
 
   const renderVideoEmbed = (url) => {
+    let videoId;
+
     if (isYouTubeLink(url)) {
-      const videoId = url.split('v=')[1].split('&')[0];
+      if (url.includes('/shorts/')) {
+        const parts = url.split('/shorts/');
+        videoId = parts[1];
+      } else {
+        videoId = url.split('v=')[1].split('&')[0];
+      }
+
       const embedUrl = `https://www.youtube.com/embed/${videoId}`;
       return <iframe width="560" height="315" src={embedUrl} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
     } else if (isTikTokLink(url)) {
       return <TikTokEmbed url={url} />;
     }
+
     return <Typography>Unsupported video platform</Typography>;
   };
 
@@ -42,12 +68,11 @@ const JoinContest = () => {
     const { error } = await supabase
       .from('videos')
       .insert([
-        { 
+        {
           contest_id: contestId,
           user_id: supabase.auth.getUser()?.id,
           video_url: videoLink,
           title: title
-          // Additional fields can be added here
         }
       ]);
 
@@ -73,6 +98,11 @@ const JoinContest = () => {
   return (
     <Container component="main" maxWidth="md">
       <Typography component="h1" variant="h5">Join Contest</Typography>
+      {contestTopic && (
+        <Typography variant="subtitle1" style={{ margin: '10px 0' }}>
+          This week's top: {contestTopic}
+        </Typography>
+      )}
       <TextField
         fullWidth
         label="Enter video link"
@@ -103,7 +133,6 @@ const JoinContest = () => {
         {submitting ? 'Submitting...' : 'Upload'}
       </Button>
 
-      {/* Preview Section */}
       {showPreview && (
         <div style={{ marginTop: '20px' }}>
           <Typography variant="h6">Preview Submission</Typography>
