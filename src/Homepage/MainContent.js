@@ -99,7 +99,7 @@ const MainContent = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom component="div" sx={{ textAlign: 'center', mt: 4 }}>
-        Welcome to STYRATE
+        Welcome to CURATRS
       </Typography>
       <Typography variant="subtitle1" gutterBottom component="div" sx={{ textAlign: 'center' }}>
         Join exciting video contests and earn rewards!
