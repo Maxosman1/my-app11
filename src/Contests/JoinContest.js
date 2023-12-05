@@ -100,7 +100,7 @@ const JoinContest = () => {
       <Typography component="h1" variant="h5">Join Contest</Typography>
       {contestTopic && (
         <Typography variant="subtitle1" style={{ margin: '10px 0' }}>
-          This week's top: {contestTopic}
+          This week's topic: {contestTopic}
         </Typography>
       )}
       <TextField
