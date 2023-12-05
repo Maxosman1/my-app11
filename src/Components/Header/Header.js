@@ -13,7 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb'; // Replace with your logo/icon
+import AdbIcon from '@mui/icons-material/SavedSearch'; // Replace with your logo/icon
 
 const pages = ['Contests', 'Rewards', 'Contact','Leaderboard'];
 
@@ -84,7 +84,7 @@ const Header = () => {
               color: 'inherit',
               textDecoration: 'none',
             }}>
-            LOGO
+            Curatrs
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -135,7 +135,7 @@ const Header = () => {
               color: 'inherit',
               textDecoration: 'none',
             }}>
-            LOGO
+            Curatrs
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
