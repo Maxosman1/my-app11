@@ -15,6 +15,8 @@ import JoinContest from './Contests/JoinContest';
 import Profile from './Auth/Profile';
 import EditProfile from './Auth/EditProfile';
 import MainContent from './Homepage/MainContent';
+import Leaderboard from './Leaderboard';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const queryClient = new QueryClient();
@@ -30,6 +32,7 @@ const App = () => {
             <Route path="/" element={<MainContent />} />
                 <Route path="/contests" element={<Contests />} />
                 <Route path="/rewards" element={<Rewards />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/contest/:contestId" element={<ContestPage />} />
                 <Route path="/contest/:contestId/submissions" element={<ContestSubmissionsPage />} />
                 <Route path="/contest/:contestId/joincontest" element={<JoinContest />} />

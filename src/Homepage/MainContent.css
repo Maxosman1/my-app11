@@ -1,54 +1,73 @@
-.main-content {
+/* MainContent.css */
+.main-container {
     text-align: center;
-    padding: 2rem;
-    background: linear-gradient(to right, #6dd5ed, #2193b0); /* Gradient background */
-    color: white; /* White text color for better contrast */
+    margin-top: 20px;
 }
 
-.card-container {
+.points-card {
+    margin: 20px auto;
+    padding: 15px;
+    max-width: 300px;
+    background-color: #ff416c;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.carousel-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.carousel-card {
+    position: relative;
+}
+
+.carousel-number {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     display: flex;
-    flex-wrap: wrap; /* Allows wrapping of cards */
+    align-items: center;
     justify-content: center;
-    gap: 2rem;
-    margin-top: 2rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1); /* Semi-transparent background for cards */
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    font-size: 20px;
+    color: #333;
 }
 
-.card-container .card {
-    border: none;
-    background: white;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Larger shadow for each card */
-    border-radius: 10px; /* Rounded corners for cards */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
+.leaderboard-container {
+    margin-top: 20px;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-.card-container .card:hover {
-    transform: translateY(-5px); /* Slight raise effect on hover */
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3); /* Increased shadow on hover */
+.leaderboard-title {
+    margin-bottom: 15px;
+    color: #333;
 }
 
-.points {
-    margin-top: 1rem;
-    background: #ff416c; /* Vibrant background for points section */
-    background: linear-gradient(to right, #ff4b2b, #ff416c); /* Gradient for points */
-    color: white; /* White text color */
-    padding: 0.5rem;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    animation: fadeIn 1s ease; /* Fade-in animation */
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
 
-/* Keyframes for fadeIn animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.leaderboard-item:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-username {
+    font-weight: bold;
+}
+
+.leaderboard-points {
+    color: #ff416c;
+    font-weight: bold;
 }

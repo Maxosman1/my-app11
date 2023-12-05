@@ -1,7 +1,7 @@
 // ContestsPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Card from '../src/Components/Card/card';
+import { Grid, Typography, Card, CardContent, CardMedia } from '@mui/material';
 import OpinionsIcon from '../src/icons/opinions-icon.svg';
 import TechAndGadgetsIcon from '../src/icons/TechAndGadgetsIcon.svg';
 import HomeAndKitchenIcon from '../src/icons/HomeAndKitchenIcon.svg';
@@ -14,7 +14,6 @@ import ToysAndGamesIcon from '../src/icons/ToysAndGamesIcon.svg';
 import LuxuryItemsIcon from '../src/icons/luxuryItemsIcon.svg';
 import HighEndTechIcon from '../src/icons/HighEndTechIcon.svg';
 import FineArtIcon from '../src/icons/FineArtIcon.svg';
-import '../src/contestpage.css'
 
 
 const contestsData = [
@@ -117,29 +116,46 @@ const contestsData = [
   // Add more categories if needed
 ];
 
+// Contest Card Component
+const ContestCard = ({ contest }) => (
+  <Card sx={{ maxWidth: 345, m: 2 }}>
+    <CardMedia
+      component="img"
+      height="200" // Increased height
+      image={contest.icon}
+      alt={contest.label}
+      sx={{ objectFit: 'contain' }} // Ensures the icon is contained within the bounds
+    />
+    <CardContent>
+      <Typography gutterBottom variant="h5" component="div">
+        {contest.label}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {contest.description}
+      </Typography>
+    </CardContent>
+  </Card>
+);
+// Main Contests Page Component
 const Contests = () => {
   return (
     <div>
-      {contestsData.map((category) => (
+      {contestsData.map(category => (
         <section key={category.id} className="my-5">
-          <h2 className="text-center my-3">{category.label}</h2>
-          <div className="d-flex flex-wrap justify-content-center">
-            {category.contests.map((contest) => (
+          <Typography variant="h4" gutterBottom textAlign="center">
+            {category.label}
+          </Typography>
+          <Grid container justifyContent="center">
+            {category.contests.map(contest => (
               <Link to={`/contest/${contest.id}`} key={contest.id} style={{ textDecoration: 'none' }}>
-                <Card
-                  title={contest.label}
-                  content={contest.description}
-                  icon={contest.icon}
-                />
+                <ContestCard contest={contest} />
               </Link>
             ))}
-          </div>
+          </Grid>
         </section>
       ))}
     </div>
   );
 };
-
-
 
 export default Contests;

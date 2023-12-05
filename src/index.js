@@ -1,11 +1,14 @@
+// App.js or index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { MantineProvider } from '@mantine/core';
+import App from './App'; // Your main App component
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <App />
+    </MantineProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

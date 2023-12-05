@@ -7,7 +7,6 @@ const MainContent = () => {
   const [user, setUser] = useState(null);
   const [points, setPoints] = useState(0);
   const [topVideos, setTopVideos] = useState([]);
-  const [newestVideos, setNewestVideos] = useState([]);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -30,7 +29,7 @@ const MainContent = () => {
       }
     };
 
-    const fetchVideos = async (orderColumn, setFunction) => {
+    const fetchTopVideos = async () => {
       const { data } = await supabase
         .from('videos')
         .select(`
@@ -39,17 +38,16 @@ const MainContent = () => {
           video_url,
           contests (title)
         `)
-        .order(orderColumn, { ascending: false })
+        .order('votes', { ascending: false })
         .limit(3);
 
       if (data) {
-        setFunction(data);
+        setTopVideos(data);
       }
     };
 
     checkUser();
-    fetchVideos('votes', setTopVideos); // Fetch top videos
-    fetchVideos('created_at', setNewestVideos); // Fetch newest videos
+    fetchTopVideos(); // Fetch top videos
   }, []);
 
   const isYouTubeLink = (url) => /youtu(be.com|\.be)/.test(url);
@@ -75,19 +73,24 @@ const MainContent = () => {
         {videos.map((video) => (
           <Grid item key={video.id} xs={12} sm={6} md={4}>
             <Card>
-              {renderVideoEmbed(video.video_url)}
-              <CardContent>
-                <Typography variant="h6" component="div">
+              {/* Title and Contest Category Section */}
+              <CardContent sx={{ backgroundColor: '#f5f5f5  ', color: 'black', textAlign: 'center' }}>
+                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                   {video.title}
                 </Typography>
+                <Typography variant="subtitle1" color="text.secondary" gutterBottom sx={{ fontStyle: 'italic' }}>
+                  {video.contests && video.contests.title}
+                </Typography>
+              </CardContent>
+  
+              {/* Video Embed Section */}
+              {renderVideoEmbed(video.video_url)}
+  
+              {/* Additional Content - Video Description */}
+              <CardContent>
                 <Typography variant="body2" color="text.secondary">
                   {video.description}
                 </Typography>
-                {video.contests && (
-                  <Typography variant="caption" display="block" gutterBottom>
-                    Category: {video.contests.title}
-                  </Typography>
-                )}
               </CardContent>
             </Card>
           </Grid>
@@ -95,11 +98,12 @@ const MainContent = () => {
       </Grid>
     </>
   );
+  
 
   return (
     <Container>
       <Typography variant="h4" gutterBottom component="div" sx={{ textAlign: 'center', mt: 4 }}>
-        Welcome to STYRATE
+        Welcome to CURATRS
       </Typography>
       <Typography variant="subtitle1" gutterBottom component="div" sx={{ textAlign: 'center' }}>
         Join exciting video contests and earn rewards!
@@ -119,7 +123,6 @@ const MainContent = () => {
         )}
       </Card>
       {renderVideoGrid(topVideos, "Top Videos")}
-      {renderVideoGrid(newestVideos, "Newest Videos")}
     </Container>
   );
 };

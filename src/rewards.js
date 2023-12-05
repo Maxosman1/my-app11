@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import RewardsData from './rewardsdata.js';
 import { AppBar, Tabs, Tab, Box, Typography, Card, CardMedia, CardContent, CardActions, Button, Grid } from '@mui/material';
 
-
-
 function RewardsPage() {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -32,7 +30,7 @@ function RewardsPage() {
       </AppBar>
       {categories.map((category, index) => (
         <TabPanel value={activeTab} index={index} key={category}>
-          <RewardsList rewards={RewardsData[category]} />
+          <RewardsList rewards={RewardsData[category] || []} />
         </TabPanel>
       ))}
     </Box>
@@ -78,6 +76,11 @@ function RewardsList({ rewards }) {
 }
 
 function RewardCard({ reward }) {
+  // Add additional checks for reward properties to prevent undefined errors
+  if (!reward || !reward.image || !reward.description || !reward.points) {
+    return null; // Handle the case where reward data is incomplete
+  }
+
   return (
     <Card>
       <CardMedia
