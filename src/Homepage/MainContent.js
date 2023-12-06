@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Container, Grid, Card, CardContent, Button } from '@mui/material';
-import supabase from '../supabaseClient'; // Adjust the path as needed
+import {
+  Typography,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Box,
+  Paper,
+  useMediaQuery,
+} from '@mui/material';
 import { TikTokEmbed } from 'react-social-media-embed';
+import supabase from '../supabaseClient'; // Adjust the path as needed
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import LoyaltyIcon from '@mui/icons-material/Loyalty';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const MainContent = () => {
   const [user, setUser] = useState(null);
   const [points, setPoints] = useState(0);
   const [topVideos, setTopVideos] = useState([]);
+
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const checkUser = async () => {
@@ -36,7 +51,8 @@ const MainContent = () => {
           id,
           title,
           video_url,
-          contests (title)
+          contests (title),
+          description
         `)
         .order('votes', { ascending: false })
         .limit(3);
@@ -57,7 +73,7 @@ const MainContent = () => {
     if (isYouTubeLink(videoUrl)) {
       const videoId = videoUrl.split('v=')[1].split('&')[0];
       const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-      return <iframe width="560" height="315" src={embedUrl} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
+      return <iframe width="100%" height="315" src={embedUrl} frameBorder="0" allowFullScreen title="YouTube Video"></iframe>;
     } else if (isTikTokLink(videoUrl)) {
       return <TikTokEmbed url={videoUrl} />;
     }
@@ -73,8 +89,7 @@ const MainContent = () => {
         {videos.map((video) => (
           <Grid item key={video.id} xs={12} sm={6} md={4}>
             <Card>
-              {/* Title and Contest Category Section */}
-              <CardContent sx={{ backgroundColor: '#f5f5f5  ', color: 'black', textAlign: 'center' }}>
+              <CardContent sx={{ backgroundColor: '#f5f5f5', color: 'black', textAlign: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                   {video.title}
                 </Typography>
@@ -82,11 +97,9 @@ const MainContent = () => {
                   {video.contests && video.contests.title}
                 </Typography>
               </CardContent>
-  
-              {/* Video Embed Section */}
+
               {renderVideoEmbed(video.video_url)}
-  
-              {/* Additional Content - Video Description */}
+
               <CardContent>
                 <Typography variant="body2" color="text.secondary">
                   {video.description}
@@ -98,30 +111,73 @@ const MainContent = () => {
       </Grid>
     </>
   );
-  
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom component="div" sx={{ textAlign: 'center', mt: 4 }}>
+    <Container sx={{ textAlign: 'center', mt: 4 }}>
+      <Typography variant="h4" gutterBottom component="div">
         Welcome to CURATRS
       </Typography>
-      <Typography variant="subtitle1" gutterBottom component="div" sx={{ textAlign: 'center' }}>
+      <Typography variant="subtitle1" gutterBottom component="div">
         Join exciting video contests and earn rewards!
       </Typography>
-      <Card sx={{ mx: 'auto', mb: 3, p: 2, maxWidth: 300, backgroundColor: '#ff416c', color: 'white' }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          maxWidth: isMobile ? '100%' : '300px',
+          margin: 'auto',
+          backgroundColor: '#ff416c',
+          color: 'white',
+        }}
+      >
         {user ? (
-          <Typography variant="body1" component="div" sx={{ textAlign: 'center' }}>
+          <Typography variant="body1" component="div">
             Your Points: {points}
           </Typography>
         ) : (
-          <div style={{ textAlign: 'center' }}>
+          <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body1" component="div">
               Please log in to see your points
             </Typography>
-            <Button variant="contained" color="primary" onClick={() => {/* Add login logic here */}}>Log In</Button>
-          </div>
+            <Button variant="contained" color="primary" onClick={() => {/* Add login logic here */}}>
+              Log In
+            </Button>
+          </Box>
         )}
-      </Card>
+      </Paper>
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h5" gutterBottom component="div">
+          🎁 Newest Features 🎁
+        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            gap: isMobile ? 2 : 0,
+          }}
+        >
+          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
+            <YouTubeIcon fontSize="large" />
+            <Typography variant="body1" gutterBottom>
+              Lower-level prizes include exclusive discount codes to our retail partners, unlocking amazing deals for our winners.
+            </Typography>
+          </Paper>
+          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
+            <LoyaltyIcon fontSize="large" />
+            <Typography variant="body1" gutterBottom>
+              Brands can now sponsor the theme of our weekly contests, bringing you exciting challenges and rewards tailored by your favorite companies.
+            </Typography>
+          </Paper>
+          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
+            <EmojiEventsIcon fontSize="large" />
+            <Typography variant="body1" gutterBottom>
+              Enjoy subscription rewards for consistent engagement and creativity! More contests, more fun, and more exclusive perks await you.
+            </Typography>
+          </Paper>
+        </Box>
+      </Box>
       {renderVideoGrid(topVideos, "Top Videos")}
     </Container>
   );
