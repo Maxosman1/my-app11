@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TextField, Button, Typography, Container } from '@mui/material';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -36,24 +37,51 @@ const ContactForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        <input type="text" name="name" value={formData.name} onChange={handleChange} />
-      </label>
+    <Container maxWidth="sm">
+      <form onSubmit={handleSubmit}>
+        <Typography variant="h5" gutterBottom>
+          Contact Us
+        </Typography>
 
-      <label>
-        Email:
-        <input type="email" name="email" value={formData.email} onChange={handleChange} />
-      </label>
+        <TextField
+          label="Name"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
 
-      <label>
-        Message:
-        <textarea name="message" value={formData.message} onChange={handleChange} />
-      </label>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
 
-      <button type="submit">Submit</button>
-    </form>
+        <TextField
+          label="Message"
+          multiline
+          rows={4}
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Submit
+        </Button>
+      </form>
+      <Typography>or email us at styrateco@gmail.com</Typography>
+
+
+    </Container>
   );
 };
 

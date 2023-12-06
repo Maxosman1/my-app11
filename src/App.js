@@ -16,6 +16,8 @@ import Profile from './Auth/Profile';
 import EditProfile from './Auth/EditProfile';
 import MainContent from './Homepage/MainContent';
 import Contact from './contact';
+import Leaderboard from './Leaderboard';
+
 
 
 const queryClient = new QueryClient();
@@ -41,6 +43,7 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/leaderboard" element={<Leaderboard />} /> 
                 <Route path="/auth" element={<Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />} />
               </Routes>
             </div>
