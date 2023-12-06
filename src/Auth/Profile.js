@@ -3,34 +3,37 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Avatar, Button, List, ListItem, ListItemText } from '@mui/material';
 import supabase from '../supabaseClient';
 
-const Profile = () => {
-  const [userProfile, setUserProfile] = useState({ username: '', avatar_url: '', points: 0 });
-  const [userVideos, setUserVideos] = useState([]);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      const user = await supabase.auth.getUser();
-      if (!user.data) {
-        navigate('/auth');
-        return;
-      }
-
+  const Profile = () => {
+    const [userProfile, setUserProfile] = useState({ username: '', avatar_url: '', points: 0 });
+    const [userVideos, setUserVideos] = useState([]);
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+      const fetchProfileData = async () => {
+        const user = await supabase.auth.getUser();
+        if (!user.data) {
+          navigate('/auth');
+          return;
+        }
+        
       try {
         const profileResponse = await supabase
           .from('profiles')
-          .select('*')
-          .eq('user_id', user.data.id)
+          .select('username', 'avatar_url', 'points') // Add other fields you need
+          .eq('user_id', user.id)
           .single();
-        
+
         if (profileResponse.error) throw profileResponse.error;
-        setUserProfile(profileResponse.data);
+
+        const userProfileData = profileResponse.data;
+        setUserProfile(userProfileData);
 
         const videosResponse = await supabase
           .from('videos')
           .select('*')
-          .eq('user_id', user.data.id);
-        
+          .eq('user_id', user.id);
+
         if (videosResponse.error) throw videosResponse.error;
         setUserVideos(videosResponse.data);
       } catch (error) {

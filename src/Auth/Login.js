@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography, Box, CircularProgress, Link } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, CircularProgress, Link, Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import supabase from '../supabaseClient'; // Adjust the path as needed
 
 const signIn = async ({ email, password }) => {
@@ -17,17 +18,27 @@ const signIn = async ({ email, password }) => {
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
 
   const { mutate, isLoading, error } = useMutation({
     mutationFn: signIn,
-    onSuccess: () => navigate('/profile'),
+    onSuccess: () => {
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        setOpenSnackbar(false);
+        navigate('/profile');
+      }, 2000);
+    },
   });
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
     mutate({ email, password });
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -68,6 +79,11 @@ const Login = () => {
             {"Don't have an account? Sign Up"}
           </Link>
         </Box>
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <MuiAlert elevation={6} variant="filled" severity="success">
+            Login successful! Redirecting to profile...
+          </MuiAlert>
+        </Snackbar>
       </Box>
     </Container>
   );

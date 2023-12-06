@@ -78,7 +78,7 @@ const ContactForm = () => {
           Submit
         </Button>
       </form>
-      <Typography>or email us at styrateco@gmail.com</Typography>
+      <Typography>or email us at curatrs@gmail.com</Typography>
 
 
     </Container>
