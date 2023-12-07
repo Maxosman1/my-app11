@@ -32,7 +32,8 @@ const Header = () => {
     });
 
     return () => {
-      authListener.subscription.unsubscribe()    };
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const handleOpenNavMenu = (event) => {
@@ -66,7 +67,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'black' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />

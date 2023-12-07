@@ -89,7 +89,7 @@ const MainContent = () => {
         {videos.map((video) => (
           <Grid item key={video.id} xs={12} sm={6} md={4}>
             <Card>
-              <CardContent sx={{ backgroundColor: '#f5f5f5', color: 'black', textAlign: 'center' }}>
+              <CardContent sx={{ backgroundColor: 'rgba(255,255,255,0.9)', color: 'black', textAlign: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                   {video.title}
                 </Typography>
@@ -113,73 +113,75 @@ const MainContent = () => {
   );
 
   return (
-    <Container sx={{ textAlign: 'center', mt: 4 }}>
-      <Typography variant="h4" gutterBottom component="div">
-        Welcome to CURATRS
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom component="div">
-        Join exciting video contests and earn rewards!
-      </Typography>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 2,
-          maxWidth: isMobile ? '100%' : '300px',
-          margin: 'auto',
-          backgroundColor: '#ff416c',
-          color: 'white',
-        }}
-      >
-        {user ? (
-          <Typography variant="body1" component="div">
-            Your Points: {points}
-          </Typography>
-        ) : (
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body1" component="div">
-              Please log in to see your points
-            </Typography>
-            <Button variant="contained" color="primary" onClick={() => {/* Add login logic here */}}>
-              Log In
-            </Button>
-          </Box>
-        )}
-      </Paper>
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h5" gutterBottom component="div">
-          🎁 Newest Features 🎁
+    <Box sx={{ backgroundColor: 'black', color: 'white', minHeight: '100vh', padding: '20px' }}>
+      <Container sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography variant="h4" gutterBottom component="div">
+          Welcome to CURATRS
         </Typography>
-        <Box
+        <Typography variant="subtitle1" gutterBottom component="div">
+          Join exciting video contests and earn rewards!
+        </Typography>
+        <Paper
+          elevation={3}
           sx={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            gap: isMobile ? 2 : 0,
+            p: 2,
+            maxWidth: isMobile ? '100%' : '300px',
+            margin: 'auto',
+            backgroundColor: 'rgba(255,65,108,0.9)',
+            color: 'white',
           }}
         >
-          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
-            <YouTubeIcon fontSize="large" />
-            <Typography variant="body1" gutterBottom>
-              Lower-level prizes include exclusive discount codes to our retail partners, unlocking amazing deals for our winners.
+          {user ? (
+            <Typography variant="body1" component="div">
+              Your Points: {points}
             </Typography>
-          </Paper>
-          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
-            <LoyaltyIcon fontSize="large" />
-            <Typography variant="body1" gutterBottom>
-              Brands can now sponsor the theme of our weekly contests, bringing you exciting challenges and rewards tailored by your favorite companies.
-            </Typography>
-          </Paper>
-          <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: '#f5f5f5' }}>
-            <EmojiEventsIcon fontSize="large" />
-            <Typography variant="body1" gutterBottom>
-              Enjoy subscription rewards for consistent engagement and creativity! More contests, more fun, and more exclusive perks await you.
-            </Typography>
-          </Paper>
+          ) : (
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body1" component="div">
+                Please log in to see your points
+              </Typography>
+              <Button variant="contained" color="primary" onClick={() => {/* Add login logic here */}}>
+                Log In
+              </Button>
+            </Box>
+          )}
+        </Paper>
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h5" gutterBottom component="div">
+            🎁 Newest Features 🎁
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              gap: isMobile ? 2 : 0,
+            }}
+          >
+            <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: 'rgba(245,245,245,0.9)' }}>
+              <YouTubeIcon fontSize="large" />
+              <Typography variant="body1" gutterBottom>
+                Lower-level prizes include exclusive discount codes to our retail partners, unlocking amazing deals for our winners.
+              </Typography>
+            </Paper>
+            <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: 'rgba(245,245,245,0.9)' }}>
+              <LoyaltyIcon fontSize="large" />
+              <Typography variant="body1" gutterBottom>
+                Brands can now sponsor the theme of our weekly contests, bringing you exciting challenges and rewards tailored by your favorite companies.
+              </Typography>
+            </Paper>
+            <Paper elevation={3} sx={{ p: 2, width: isMobile ? '100%' : '250px', backgroundColor: 'rgba(245,245,245,0.9)' }}>
+              <EmojiEventsIcon fontSize="large" />
+              <Typography variant="body1" gutterBottom>
+                Enjoy subscription rewards for consistent engagement and creativity! More contests, more fun, and more exclusive perks await you.
+              </Typography>
+            </Paper>
+          </Box>
         </Box>
-      </Box>
-      {renderVideoGrid(topVideos, "Top Videos")}
-    </Container>
+        {renderVideoGrid(topVideos, "Top Videos")}
+      </Container>
+    </Box>
   );
 };
 
