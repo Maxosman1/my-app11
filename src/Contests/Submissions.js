@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import supabase from '../supabaseClient';
-import { Card, CardContent, Typography, Container, Button, Box } from '@mui/material';
+import { Card, CardContent, Typography, Container, Button, Box, List, ListItem, ListItemText, Avatar } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { TikTokEmbed } from 'react-social-media-embed';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -11,6 +11,7 @@ const Submissions = () => {
   const { contestId } = useParams();
   const [submissions, setSubmissions] = useState([]);
   const [contestDetails, setContestDetails] = useState({ label: '', points: 0 });
+  const [comments, setComments] = useState({}); // Use an object to store comments with submission IDs as keys
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const submissionsPerPage = 10;
@@ -18,6 +19,7 @@ const Submissions = () => {
   useEffect(() => {
     fetchContestDetails();
     fetchSubmissions(page);
+    fetchComments();
   }, [page, contestId]);
 
   const fetchContestDetails = async () => {
@@ -48,6 +50,24 @@ const Submissions = () => {
       setSubmissions(prev => [...prev, ...data]);
       setHasMore(data.length === submissionsPerPage);
       setPage(currentPage + 1);
+    }
+  };
+
+  const fetchComments = async () => {
+    for (const submission of submissions) {
+      const { data: commentsData, error } = await supabase
+        .from('comments')
+        .select('id, content')
+        .eq('video_id', submission.id);
+
+      if (error) {
+        console.error(`Error fetching comments for submission ${submission.id}:`, error);
+      } else {
+        setComments(prevComments => ({
+          ...prevComments,
+          [submission.id]: commentsData || [], // Store comments in the object with submission ID as the key
+        }));
+      }
     }
   };
 
@@ -94,6 +114,19 @@ const Submissions = () => {
                   Downvote {submission.downvotes || 0}
                 </Button>
               </Box>
+
+              {/* Display Comments */}
+              <Typography variant="h6" sx={{ mt: 2 }}>
+                Comments
+              </Typography>
+              <List>
+                {comments[submission.id] && comments[submission.id].map((comment) => (
+                  <ListItem key={comment.id}>
+                    <Avatar src="/broken-image.jpg" sx={{ mr: 2 }} />
+                    <ListItemText primary={comment.content} />
+                  </ListItem>
+                ))}
+              </List>
             </CardContent>
           </Card>
         ))}
