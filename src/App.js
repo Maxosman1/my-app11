@@ -35,8 +35,8 @@ const theme = createTheme({
 const App = () => {
   return (
     <Auth0Provider
-      domain="your-auth0-domain"
-      clientId="your-client-id"
+      domain="dev-eevxtyxjq6ulz633.us.auth0.com"
+      clientId="8Spm2KnOgkdh8NU6AFghwmVAMulioXCc"
       redirectUri={window.location.origin}
     >
       <QueryClientProvider client={queryClient}>
