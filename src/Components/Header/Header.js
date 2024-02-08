@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/SavedSearch'; // Replace with your logo/icon
 
-const pages = ['Contests', 'Rewards','Leaderboard','Contact'];
+const pages = ['Contests', 'Rewards','Leaderboard','Contact','Reviews'];
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
