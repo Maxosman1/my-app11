@@ -15,7 +15,7 @@ import EditProfile from './Auth/EditProfile';
 import Contact from './contact';
 import Leaderboard from './Leaderboard';
 import Login from './Auth/Login'; // Assuming you have a Login component
-import ReviewPage from './ReviewPage'; // Import the ReviewPage component
+import ReviewPage from './ReviewPage/Reviewpage'; // Import the ReviewPage component
 
 import { createClient } from '@supabase/supabase-js';
 import { Auth, Typography, Container } from '@supabase/auth-ui-react';

@@ -1,6 +1,7 @@
+// Header.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import supabase from '../../supabaseClient'; // Adjust the path as needed
+import { useNavigate, Link } from 'react-router-dom';
+import supabase from '../../supabaseClient';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,9 +14,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/SavedSearch'; // Replace with your logo/icon
+import AdbIcon from '@mui/icons-material/SavedSearch';
 
-const pages = ['Contests', 'Rewards','Leaderboard','Contact','Reviews'];
+const pages = ['Contests', 'Rewards', 'Leaderboard', 'Contact', 'Reviews'];
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -124,8 +125,8 @@ const Header = () => {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="/"
+            component={Link}
+            to="/reviews" // Link to Reviews page
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -135,8 +136,9 @@ const Header = () => {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-            }}>
-            Curatrs
+            }}
+          >
+            Reviews
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
