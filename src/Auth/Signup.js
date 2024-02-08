@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, CircularProgress, Link } from '@mui/material';
-import supabase from '../supabaseClient'; // Adjust the path as needed
+import { supabase } from './AuthProvider'; // Adjust the path as needed
 
 const signUp = async ({ email, password }) => {
   const { user, error } = await supabase.auth.signUp({
@@ -23,7 +23,6 @@ const Signup = () => {
     mutationFn: signUp,
     onSuccess: () => navigate('/login'),
   });
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();

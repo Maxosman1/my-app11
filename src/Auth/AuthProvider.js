@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+// AuthProvider.js
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabaseUrl = "https://uwixomogyvygqonywfqz.supabase.co";
-const supabaseAnonKey = "your-supabase-anon-key"; // Replace with your actual anon key
+const supabaseUrl = 'https://your-supabase-url.supabase.co';
+const supabaseAnonKey = 'your-supabase-anon-key';
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const AuthContext = createContext({});
+const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -21,43 +21,34 @@ const AuthProvider = ({ children }) => {
         const { data: { session } } = await supabase.auth.getSession();
         setUser(session?.user ?? null);
       } catch (error) {
-        console.error("Error fetching session:", error);
+        console.error('Error fetching session:', error);
       }
       setLoading(false);
     };
 
     checkSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.error === 'PASSWORD_RECOVERY') {
         setUser(null);
-      } else if (event === "SIGNED_IN") {
+      } else if (session?.event === 'SIGNED_IN') {
         setUser(session.user);
-      } else if (event === "SIGNED_OUT") {
+      } else if (session?.event === 'SIGNED_OUT') {
         setUser(null);
       }
     });
 
     return () => {
-      authListener.subscription.unsubscribe()    };
+      authListener?.unsubscribe();
+    };
   }, []);
 
   const login = async (email, password) => {
-    return supabase.auth.signInWithPassword({ email, password });
+    return supabase.auth.signIn({ email, password });
   };
 
   const signOut = async () => {
     return supabase.auth.signOut();
-  };
-
-  const passwordReset = async (email) => {
-    return supabase.auth.api.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:5173/update-password"
-    });
-  };
-
-  const updatePassword = async (accessToken, newPassword) => {
-    return supabase.auth.api.updateUser(accessToken, { password: newPassword });
   };
 
   const value = {
@@ -65,17 +56,10 @@ const AuthProvider = ({ children }) => {
     isLoading: loading,
     login,
     signOut,
-    passwordReset,
-    updatePassword,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        // ... (authentication functions like login, signOut, etc.)
-      }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

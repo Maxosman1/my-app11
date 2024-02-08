@@ -1,9 +1,7 @@
 // App.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import AuthProvider from './Auth/AuthProvider';
-import { Auth0Provider } from '@auth0/auth0-react'; // Import Auth0Provider
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Header from './Components/Header/Header';
 import MainContent from './Homepage/MainContent';
@@ -16,6 +14,13 @@ import Profile from './Auth/Profile';
 import EditProfile from './Auth/EditProfile';
 import Contact from './contact';
 import Leaderboard from './Leaderboard';
+import Login from './Auth/Login'; // Assuming you have a Login component
+
+import { createClient } from '@supabase/supabase-js';
+import { Auth, Typography, Container } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
+
+const supabase = createClient('your-supabase-url', 'your-supabase-anon-key');
 
 const queryClient = new QueryClient();
 
@@ -33,37 +38,81 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
-    <Auth0Provider
-      domain="dev-eevxtyxjq6ulz633.us.auth0.com"
-      clientId="8Spm2KnOgkdh8NU6AFghwmVAMulioXCc"
-      redirectUri={window.location.origin}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AuthProvider>
-            <Router>
-              <div className="App">
-                <Header />
-                <Routes>
-                  <Route path="/" element={<MainContent />} />
-                  <Route path="/contests" element={<Contests />} />
-                  <Route path="/rewards" element={<Rewards />} />
-                  <Route path="/contest/:contestId" element={<ContestPage />} />
-                  <Route path="/contest/:contestId/submissions" element={<ContestSubmissionsPage />} />
-                  <Route path="/contest/:contestId/joincontest" element={<JoinContest />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/edit-profile" element={<EditProfile />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                </Routes>
-              </div>
-            </Router>
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </Auth0Provider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <div className="App">
+            <Header />
+            <Routes>
+              <Route path="/" element={<MainContent />} />
+              <Route path="/contests" element={<Contests />} />
+              <Route path="/rewards" element={<Rewards />} />
+              <Route path="/contest/:contestId" element={<ContestPage />} />
+              <Route path="/contest/:contestId/submissions" element={<ContestSubmissionsPage />} />
+              <Route path="/contest/:contestId/joincontest" element={<JoinContest />} />
+              <Route
+                path="/profile"
+                element={
+                  session ? (
+                    <Profile />
+                  ) : (
+                    <Container component="main" maxWidth="xs">
+                      <Typography component="h1" variant="h5">
+                        Authentication
+                      </Typography>
+                      <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+                    </Container>
+                  )
+                }
+              />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route
+                path="/auth"
+                element={
+                  <Container component="main" maxWidth="xs">
+                    <Typography component="h1" variant="h5">
+                      Authentication
+                    </Typography>
+                    <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+                  </Container>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <Container component="main" maxWidth="xs">
+                    <Typography component="h1" variant="h5">
+                      Login
+                    </Typography>
+                    <Login />
+                  </Container>
+                }
+              />
+            </Routes>
+          </div>
+        </Router>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

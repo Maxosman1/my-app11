@@ -1,6 +1,7 @@
+// Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'react-auth-kit';
+import { useAuth } from './AuthProvider';
 import { Container, CssBaseline, Typography, Box, TextField, Button } from '@mui/material';
 
 const Login = () => {
@@ -11,10 +12,8 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await auth.signIn({ email, password });
-      if (response.status === 200) {
-        navigate('/profile');
-      }
+      await auth.login(email, password);
+      navigate('/profile');
     } catch (error) {
       console.error('Login error:', error.message);
     }

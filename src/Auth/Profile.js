@@ -1,26 +1,28 @@
+// Profile.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Avatar, Button, List, ListItem, ListItemText } from '@mui/material';
 import supabase from '../supabaseClient';
+import { useAuth } from './AuthProvider';
 
+const Profile = () => {
+  const [userProfile, setUserProfile] = useState({ username: '', avatar_url: '', points: 0 });
+  const [userVideos, setUserVideos] = useState([]);
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
 
-  const Profile = () => {
-    const [userProfile, setUserProfile] = useState({ username: '', avatar_url: '', points: 0 });
-    const [userVideos, setUserVideos] = useState([]);
-    const navigate = useNavigate();
-  
-    useEffect(() => {
-      const fetchProfileData = async () => {
-        const user = await supabase.auth.getUser();
-        if (!user.data) {
-          navigate('/auth');
-          return;
-        }
-        
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const user = await supabase.auth.user();
+      if (!user?.id) {
+        navigate('/auth');
+        return;
+      }
+
       try {
         const profileResponse = await supabase
           .from('profiles')
-          .select('username', 'avatar_url', 'points') // Add other fields you need
+          .select('username, avatar_url, points')
           .eq('user_id', user.id)
           .single();
 
@@ -45,12 +47,8 @@ import supabase from '../supabaseClient';
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     navigate('/auth');
-  };
-
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
   };
 
   return (
@@ -64,9 +62,6 @@ import supabase from '../supabaseClient';
         <Typography variant="body1">Points: {userProfile.points}</Typography>
         <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mt: 2 }}>
           Logout
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleEditProfile} sx={{ mt: 2 }}>
-          Edit Profile
         </Button>
       </Box>
 
