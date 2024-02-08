@@ -1,41 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Typography,
-  Container,
-  Button,
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Typography, Container, Button, Box, FormControl, InputLabel, Select, MenuItem, Grid, Card, CardContent } from '@mui/material';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { TikTokEmbed } from 'react-social-media-embed';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import supabase from '../supabaseClient'; // Adjust the path as needed;
-
-const categoriesList = ['All', 'Tech & Gadgets', 'Home & Kitchen', 'Beauty & Health', 'Auto & Travel', 'Books & Media', 'Fashion', 'Sports & Outdoors', 'Toys & Games', 'Luxury Items', 'High-End Tech', 'Fine Art'];
 
 const ReviewPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [videoReviews, setVideoReviews] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const videosPerPage = 10;
 
   useEffect(() => {
     fetchVideoReviews();
-  }, [selectedCategory]);
+  }, [selectedCategory, page]);
 
   const fetchVideoReviews = async () => {
-    // Fetch video reviews from your database based on the selected category
     const { data, error } = await supabase
       .from('videos')
       .select('*')
-      .eq('categories', selectedCategory === 'All' ? null : selectedCategory);
+      .eq('categories', selectedCategory === 'All' ? null : selectedCategory)
+      .range(page * videosPerPage, (page + 1) * videosPerPage - 1);
 
     if (error) {
       console.error('Error fetching video reviews:', error);
+      setHasMore(false);
     } else {
-      setVideoReviews(data || []);
+      setVideoReviews(prev => [...prev, ...data]);
+      setHasMore(data.length === videosPerPage);
+      setPage(page + 1);
     }
   };
 
@@ -44,6 +39,8 @@ const ReviewPage = () => {
   };
 
   const handleFilterClick = () => {
+    setVideoReviews([]);
+    setPage(0);
     fetchVideoReviews();
   };
 
@@ -76,41 +73,38 @@ const ReviewPage = () => {
             label="Category"
             onChange={handleCategoryChange}
           >
-            {categoriesList.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category}
-              </MenuItem>
-            ))}
+            {/* Add categories dynamically if needed */}
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Tech & Gadgets">Tech & Gadgets</MenuItem>
+            {/* Add more categories as needed */}
           </Select>
         </FormControl>
         <Button variant="contained" onClick={handleFilterClick}>
           Filter
         </Button>
       </Box>
-      <Grid container spacing={2}>
+      <InfiniteScroll
+        dataLength={videoReviews.length}
+        next={fetchVideoReviews}
+        hasMore={hasMore}
+        loader={<Typography>Loading...</Typography>}
+        endMessage={<Typography style={{ textAlign: 'center' }}>You have seen all video reviews</Typography>}
+      >
         {videoReviews.map((review) => (
-          <Grid item key={review.id} xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent sx={{ backgroundColor: 'rgba(255,255,255,0.9)', color: 'black', textAlign: 'center' }}>
-                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                  {review.title}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom sx={{ fontStyle: 'italic' }}>
-                  {review.categories && review.categories.join(', ')}
-                </Typography>
-              </CardContent>
-
+          <Card key={review.id} sx={{ mb: 4 }}>
+            <CardContent>
+              <Typography variant="h6" component="div">
+                {review.title}
+              </Typography>
               {renderVideoEmbed(review.video_url)}
-
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  {review.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              <Typography variant="body2" color="text.secondary">
+                {review.description}
+              </Typography>
+              {/* Add voting buttons or other components as needed */}
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </InfiniteScroll>
     </Container>
   );
 };
