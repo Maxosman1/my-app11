@@ -1,4 +1,3 @@
-// ReviewPage.js
 import React, { useState, useEffect } from 'react';
 import {
   Typography,
@@ -27,18 +26,9 @@ const ReviewPage = () => {
   }, [selectedCategory]);
 
   const fetchCategories = async () => {
-    // Fetch distinct categories from your database excluding 'Opinion'
-    const { data, error } = await supabase
-      .from('videos')
-      .select('categories')
-      .distinct('categories')
-      .ne('categories', 'Opinion');
-
-    if (error) {
-      console.error('Error fetching categories:', error);
-    } else {
-      setCategories(['All', ...data.map((category) => category.categories)]);
-    }
+    // Fetch distinct categories from contestsData
+    const retrievedCategories = contestsData.map((category) => category.label);
+    setCategories(['All', ...retrievedCategories]);
   };
 
   const fetchVideoReviews = async () => {
@@ -46,8 +36,7 @@ const ReviewPage = () => {
     const { data, error } = await supabase
       .from('videos')
       .select('*')
-      .eq('categories', selectedCategory === 'All' ? null : selectedCategory)
-      .ne('categories', 'Opinion');
+      .eq('categories', selectedCategory === 'All' ? null : selectedCategory);
 
     if (error) {
       console.error('Error fetching video reviews:', error);
