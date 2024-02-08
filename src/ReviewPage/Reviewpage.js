@@ -15,21 +15,15 @@ import {
 import { TikTokEmbed } from 'react-social-media-embed';
 import supabase from '../supabaseClient'; // Adjust the path as needed;
 
+const categoriesList = ['All', 'Tech & Gadgets', 'Home & Kitchen', 'Beauty & Health', 'Auto & Travel', 'Books & Media', 'Fashion', 'Sports & Outdoors', 'Toys & Games', 'Luxury Items', 'High-End Tech', 'Fine Art'];
+
 const ReviewPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [categories, setCategories] = useState([]);
   const [videoReviews, setVideoReviews] = useState([]);
 
   useEffect(() => {
-    fetchCategories();
     fetchVideoReviews();
   }, [selectedCategory]);
-
-  const fetchCategories = async () => {
-    // Fetch distinct categories from contestsData
-    const retrievedCategories = contestsData.map((category) => category.label);
-    setCategories(['All', ...retrievedCategories]);
-  };
 
   const fetchVideoReviews = async () => {
     // Fetch video reviews from your database based on the selected category
@@ -82,7 +76,7 @@ const ReviewPage = () => {
             label="Category"
             onChange={handleCategoryChange}
           >
-            {categories.map((category) => (
+            {categoriesList.map((category) => (
               <MenuItem key={category} value={category}>
                 {category}
               </MenuItem>
