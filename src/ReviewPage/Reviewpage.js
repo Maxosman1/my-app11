@@ -27,11 +27,12 @@ const ReviewPage = () => {
   }, [selectedCategory]);
 
   const fetchCategories = async () => {
-    // Fetch distinct categories from your database
+    // Fetch distinct categories from your database excluding 'Opinion'
     const { data, error } = await supabase
       .from('videos')
       .select('categories')
-      .distinct('categories');
+      .distinct('categories')
+      .ne('categories', 'Opinion');
 
     if (error) {
       console.error('Error fetching categories:', error);
@@ -45,7 +46,8 @@ const ReviewPage = () => {
     const { data, error } = await supabase
       .from('videos')
       .select('*')
-      .eq('categories', selectedCategory === 'All' ? null : selectedCategory);
+      .eq('categories', selectedCategory === 'All' ? null : selectedCategory)
+      .ne('categories', 'Opinion');
 
     if (error) {
       console.error('Error fetching video reviews:', error);
